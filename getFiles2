@@ -1,0 +1,16 @@
+var dirTree = require('directory-tree');
+var tree = dirTree('./ArticleImageCache/');
+
+const fs = require('fs');
+
+
+var stream = fs.createWriteStream("images.json");
+            stream.once('open', function(fd) {
+                 stream.write(JSON.stringify(tree));
+           stream.end();
+});
+
+
+
+
+console.log(tree);
