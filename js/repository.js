@@ -1,28 +1,45 @@
-(function(window){
-    window.repository ={
+(function(assortmentPlanPoc){
+    assortmentPlanPoc.repository ={
          images : [],
+         chosenItems: [],
          fetchImages: function(params,callback){
+            var _this = this;
+            _this.images = [];
             $.getJSON( "../images.json", function( data ) {
-//                var items = [];
                 $.each( data.children, function( key, val, index ) {
-                    var imgId = generateImageId(key);
-                    repository.images.push({
-                        id: imgId,
+                    _this.images.push({
+                        id: val.name,
                         path : val.path,
                         size:val.size,
                         tags: val.tags
                     });
-  //                  items.push( "<div data-imageId='"+imgId+"' class=\"item\"><img src='" + val.path + "'/><p>"+val.size+"</p>"+formatTags(val.tags)+"</div>" );
                 });
                 callback();
-
             });
-        
-            // $( "<ul/>", {
-            //         html: items.join( "" )
-            //         }).appendTo( "#sourceContainer" );
+        },
+        loadPlan:function(callback){
+             var _this = this;
+            _this.chosenItems = [];
+            $.getJSON( "../savedPlan.json", function( data ) {
+                $.each( data.children, function( key, val, index ) {
+                    _this.chosenItems.push({
+                        id: val.id,
+                        pos : val.pos,
+                        page: val.page
+                    });
+                });
+                callback();
+            });
+        },
+        updateChosenItem:function(params){
+            var chosenItem= this.getChosenItem(params.id); 
+            chosenItem.pos.x = params.pos.x;
+            chosenItem.pos.y = params.pos.y;
+            console.log("chosenItems",_this.repository.chosenItems);
 
-            // });
+        },
+        getChosenItem: function(id){
+            return this.chosenItems.filter(function(item){return item.id===id})[0];
         }
     }
-})(window)
+})(assortmentPlanPoc)

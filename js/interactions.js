@@ -1,19 +1,30 @@
-(function(window){
-    window.interactions ={
+(function(assortmentPlanPoc){
+    assortmentPlanPoc.interactions ={
             draggedSource:null,
             attachHandlers: function(){
+                var _this = this;
                 $(".item").mousedown(function(e){
                     e.preventDefault();
-                    interactions.draggedSource = $(this);
+                    _this.draggedSource = $(this);
                 });
                 $("body").mouseup(function(e){
-                    interactions.draggedSource = null;
+                    _this.draggedSource = null;
                 });
 
                 $("#filterSelect").on("change",function(e){
                     var tag = $(this).val();
-                    filter.handleSelect(tag);
+                    assortmentPlanPoc.filter.handleSelect(tag);
                 });
+                $("#fakeLoad").on("click",function(e){
+                    assortmentPlanPoc.onFakeLoad(e);
+                });
+                $("#destinationContainer").mouseup(function(e){
+                    if(_this.draggedSource!==null){
+                        assortmentPlanPoc.onDraggedSourceRelease(e);
+                        _this.enableInteract();
+                    }
+                });
+
             },
 
 
@@ -34,9 +45,20 @@
                 autoScroll: true,
                 // call this function on every dragmove event
                 onmove: this.dragMoveListener,
+                onend:this.dragEndListener
             });
             },
 
+    dragEndListener : function(event) {
+        var target = event.target;
+        _this.repository.updateChosenItem({
+                id:target.getAttribute("data-id"),
+                pos:{
+                    x:target.getAttribute('data-x'),
+                    y:target.getAttribute('data-y')
+                 }
+            });
+    },
 
     dragMoveListener : function(event) {
         var target = event.target,
@@ -52,9 +74,10 @@
         // update the posiion attributes
         target.setAttribute('data-x', x);
         target.setAttribute('data-y', y);
-    }
 
     }
 
-})(window)
+    }
+
+})(assortmentPlanPoc)
 
