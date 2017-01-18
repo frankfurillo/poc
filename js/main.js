@@ -57,7 +57,8 @@
             if(image===undefined){
                 return;
             }
-            var theNewDiv = "<div class='draggable chosenItem item' data-id='"+id+"' data-imageId='"+_this.generateChosenImageId(id)+"' data-x='"+params.pos.x+"' data-y='"+params.pos.y+"' style='transform:translate("+params.pos.x+"px,"+params.pos.y+"px); left:0;top:0;'><img src='"+image.path+"'/><p>"+image.size+"</p>"+_this.formatTags(image.tags)+"</div>";
+            var theNewDiv = "<div class='draggable chosenItem item' data-id='"+id+"' data-imageId='"+_this.generateChosenImageId(id)+"'";
+            theNewDiv+= "data-x='"+params.pos.x+"' data-y='"+params.pos.y+"' style='transform:translate("+params.pos.x+"px,"+params.pos.y+"px); left:0;top:0;'><img class='resizable' src='"+image.path+"'/><p>"+image.size+"</p>"+_this.formatTags(image.tags)+"</div>";
             $(parentElement).append(theNewDiv);
         },
         generateChosenImageId:function(key){
