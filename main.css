@@ -24,8 +24,6 @@ section {
         height: 784px;
         width: 1110px;
         background:white;
-        margin-left:20px;
-        margin-right:auto;
 } 
 
 @media print{

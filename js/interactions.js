@@ -26,14 +26,18 @@
                         _this.enableInteract();
                     }
                     if(_this.selection!=null){
-
+                            var freeOffset = _this.getFreeOffset(e);
+                           var selectedItems =  _this.getChosenItemsWithinSelection({
+                               startX : _this.selection.startX,
+                               startY: _this.selection.startY,
+                               endX: freeOffset.left,
+                               endY: freeOffset.top});
+                            console.log(selectedItems);
                           _this.selection = null;
                     }
                 });
 
                 $("#destinationContainer").mousedown(function(e){
-                    console.log(e.offsetX);
-
                     if(_this.draggingChosenItem){
                         console.log("mDown2");
                         return;
@@ -41,33 +45,37 @@
                     //to be continued. Starting to do multiselect drag and drop.
                     _this.selection = {startX:e.offsetX, startY:e.offsetY};
                     $(".selection")[0].style.left=e.offsetX;
-                    $(".selection")[0].style.top=e.offsetY;
-                    $(".selection")[0].style.width=1;
+                    $(".selection")[0].style.top= e.offsetY;
+                    $(".selection")[0].style.width= 1;
                     $(".selection")[0].style.height=1;
                     
                 });
                 $("#destinationContainer").mousemove(function(e){
                     e.preventDefault();
                     if(_this.selection!=null && _this.draggingChosenItem===false){
-                        if(e.offsetX === -1){
-                            return;
-                        }
-                        if(_this.isValidMove(e.offsetX,_this.selection.startX, e.offsetY, _this.selection.startY)){
+                        var deltaX = e.clientX - $("#destinationContainer > section").offset().left;
+                        var deltaY = e.clientY - $("#destinationContainer > section").offset().top;
+
+                        // if(e.offsetX === -1){
+                        //     return;
+                        // }
+                        if(_this.isValidMove(deltaX,_this.selection.startX, deltaY, _this.selection.startY)){
+
                             $(".selection").removeClass("hide");
         
-                            if(e.offsetX <  _this.selection.startX){
-                                $(".selection")[0].style.width=((e.offsetX - _this.selection.startX) * -1) - 5 ;
-                                $(".selection")[0].style.left=(e.offsetX) + 5 ;
+                            if(deltaX <  _this.selection.startX){
+                                $(".selection")[0].style.width=((deltaX - _this.selection.startX) * -1) - 5 ;
+                                $(".selection")[0].style.left=(deltaX) + 5 ;
                             }
                             else{
-                                $(".selection")[0].style.width=(e.offsetX - _this.selection.startX) - 5 ;
+                                $(".selection")[0].style.width=(deltaX - _this.selection.startX) - 5 ;
                             }
-                            if(e.offsetY <  _this.selection.startY){
-                                $(".selection")[0].style.height=((e.offsetY - _this.selection.startY) * -1) - 5 ;
-                                $(".selection")[0].style.top=(e.offsetY) + 5 ;
+                            if(deltaY <  _this.selection.startY){
+                                $(".selection")[0].style.height=((deltaY - _this.selection.startY) * -1) - 5 ;
+                                $(".selection")[0].style.top=(deltaY) + 5 ;
                             }
                             else{
-                                $(".selection")[0].style.height=(e.offsetY - _this.selection.startY) - 5 ;
+                                $(".selection")[0].style.height=(deltaY - _this.selection.startY) - 5 ;
                             }
                                                 
                        }
@@ -80,6 +88,28 @@
                     }
                 });
             },
+            getFreeOffset:function(e){
+                return {
+                    left: e.clientX - $("#destinationContainer > section").offset().left,
+                    top: e.clientY - $("#destinationContainer > section").offset().top
+                };
+            },
+            getChosenItemsWithinSelection: function(selectionRect){
+                //selectionRect {startX,startY,endX,endY}
+                return _this.repository.chosenItems.filter(function(item){
+                    return isWithin(item.pos.x,item.pos.y,selectionRect);
+                });
+                function isWithin(x,y,selectionRect){
+                    if(x > selectionRect.startX && x < selectionRect.endX){
+                        if(y > selectionRect.startY && y < selectionRect.endY){
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            },
+
+
             isValidMove:function(offsetX,startX,offsetY,startY){
                 var delta = 10;
                 var xIsValid = this.toPositive(offsetX -startX) > 10;
@@ -107,7 +137,7 @@
                 // call this function on every dragmove event
                 onstart: this.dragStartListener,
                 onmove: this.dragMoveListener,
-                onend:this.dragEndListener
+                onend:  this.dragEndListener
             })
              .resizable({
                     preserveAspectRatio: true,
