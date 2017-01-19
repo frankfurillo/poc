@@ -53,29 +53,26 @@
                 $("#destinationContainer").mousemove(function(e){
                     e.preventDefault();
                     if(_this.selection!=null && _this.draggingChosenItem===false){
-                        var deltaX = e.clientX - $("#destinationContainer > section").offset().left;
-                        var deltaY = e.clientY - $("#destinationContainer > section").offset().top;
-
-                        // if(e.offsetX === -1){
-                        //     return;
-                        // }
+                        var delta = _this.getFreeOffset(e);
+                        var deltaX = delta.left;
+                        var deltaY = delta.top;
                         if(_this.isValidMove(deltaX,_this.selection.startX, deltaY, _this.selection.startY)){
 
                             $(".selection").removeClass("hide");
-        
+                            var selElement = $(".selection")[0];
                             if(deltaX <  _this.selection.startX){
-                                $(".selection")[0].style.width=((deltaX - _this.selection.startX) * -1) - 5 ;
-                                $(".selection")[0].style.left=(deltaX) + 5 ;
+                                selElement.style.width=((deltaX - _this.selection.startX) * -1) - 5 ;
+                                selElement.style.left=(deltaX) + 5 ;
                             }
                             else{
-                                $(".selection")[0].style.width=(deltaX - _this.selection.startX) - 5 ;
+                                selElement.style.width=(deltaX - _this.selection.startX) - 5 ;
                             }
                             if(deltaY <  _this.selection.startY){
-                                $(".selection")[0].style.height=((deltaY - _this.selection.startY) * -1) - 5 ;
-                                $(".selection")[0].style.top=(deltaY) + 5 ;
+                                selElement.style.height=((deltaY - _this.selection.startY) * -1) - 5 ;
+                                selElement.style.top=(deltaY) + 5 ;
                             }
                             else{
-                                $(".selection")[0].style.height=(deltaY - _this.selection.startY) - 5 ;
+                                selElement.style.height=(deltaY - _this.selection.startY) - 5 ;
                             }
                                                 
                        }
@@ -95,7 +92,6 @@
                 };
             },
             getChosenItemsWithinSelection: function(selectionRect){
-                //selectionRect {startX,startY,endX,endY}
                 return _this.repository.chosenItems.filter(function(item){
                     return isWithin(item.pos.x,item.pos.y,selectionRect);
                 });
