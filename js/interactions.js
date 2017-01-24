@@ -3,23 +3,32 @@
             draggedSource:null,
             selection:null,
             draggingChosenItem:false,
+            selectedItems:[],
             attachHandlers: function(){
                 var _this = this;
                 $(".item").mousedown(function(e){
                     e.preventDefault();
                     _this.draggedSource = $(this);
                 });
+                
                 $("body").mouseup(function(e){
                     _this.draggedSource = null;
+                });
+                
+                $('#create_pdf').on('click', function() {
+                    $('body').scrollTop(0);
+                    assortmentPlanPoc.print.createPDF();
                 });
 
                 $("#filterSelect").on("change",function(e){
                     var tag = $(this).val();
                     assortmentPlanPoc.filter.handleSelect(tag);
                 });
+                
                 $("#fakeLoad").on("click",function(e){
                     assortmentPlanPoc.onFakeLoad(e);
                 });
+                
                 $("#destinationContainer").mouseup(function(e){
                     if(_this.draggedSource!==null){
                         assortmentPlanPoc.onDraggedSourceRelease(e);
@@ -27,12 +36,7 @@
                     }
                     if(_this.selection!=null){
                             var freeOffset = _this.getFreeOffset(e);
-                           var selectedItems =  _this.getChosenItemsWithinSelection({
-                               startX : _this.selection.startX,
-                               startY: _this.selection.startY,
-                               endX: freeOffset.left,
-                               endY: freeOffset.top});
-                            console.log(selectedItems);
+                           _this.selectedItems =  _this.getChosenItemsWithinSelection();
                           _this.selection = null;
                     }
                 });
@@ -54,8 +58,9 @@
                     e.preventDefault();
                     if(_this.selection!=null && _this.draggingChosenItem===false){
                         var delta = _this.getFreeOffset(e);
-                        var deltaX = delta.left;
-                        var deltaY = delta.top;
+
+                        var deltaX = _this.selection.endX = delta.left;
+                        var deltaY = _this.selection.endY = delta.top;
                         if(_this.isValidMove(deltaX,_this.selection.startX, deltaY, _this.selection.startY)){
 
                             $(".selection").removeClass("hide");
@@ -91,13 +96,14 @@
                     top: e.clientY - $("#destinationContainer > section").offset().top
                 };
             },
-            getChosenItemsWithinSelection: function(selectionRect){
+            getChosenItemsWithinSelection: function(){
+                var sel = this.selection;
                 return _this.repository.chosenItems.filter(function(item){
-                    return isWithin(item.pos.x,item.pos.y,selectionRect);
+                    return isWithin(item.pos.x,item.pos.y);
                 });
-                function isWithin(x,y,selectionRect){
-                    if(x > selectionRect.startX && x < selectionRect.endX){
-                        if(y > selectionRect.startY && y < selectionRect.endY){
+                function isWithin(x,y){
+                    if(x > sel.startX && x < sel.endX){
+                        if(y > sel.startY && y < sel.endY){
                             return true;
                         }
                     }
@@ -170,6 +176,7 @@
         },
         dragEndListener : function(event) {
             var target = event.target;
+            //TODO must update chosen item's friends also (selection friends)
             _this.repository.updateChosenItem({
                     id:target.getAttribute("data-id"),
                     pos:{
@@ -179,14 +186,11 @@
                 });
                 draggingChosenItem = false;
         },
+        moveItem:function(target,event){
+            // keep the dragged position in the data-x/data-y attributes
+            var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+            y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-        dragMoveListener : function(event) {
-            var target = event.target,
-                // keep the dragged position in the data-x/data-y attributes
-                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-            // translate the element
             target.style.webkitTransform =
             target.style.transform =
             'translate(' + x + 'px, ' + y + 'px)';
@@ -194,7 +198,24 @@
             // update the posiion attributes
             target.setAttribute('data-x', x);
             target.setAttribute('data-y', y);
-            _this.draggingChosenItem = true;
+        },
+        
+        dragMoveListener : function(event) {
+            var target = event.target,
+                // keep the dragged position in the data-x/data-y attributes
+                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            
+             assortmentPlanPoc.interactions.selectedItems.filter(function(item){return item.id != target.getAttribute("data-id") }).forEach(function(item){
+                // console.log("muräna",$("[data-imageid='chosen"+item.id+"']"));
+                 var friendTarget = $("[data-imageid='chosen"+item.id+"']")[0];
+                assortmentPlanPoc.interactions.moveItem(friendTarget,event);
+            });
+
+            assortmentPlanPoc.interactions.moveItem(target,event);
+
+
+            assortmentPlanPoc.interactions.draggingChosenItem = true;
 
         }
 
