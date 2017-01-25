@@ -5,9 +5,7 @@ div.menu {background:white;padding:10px;border-bottom:1px solid #666}
 div.mainstage {margin-top:10px;display:block;}
 .col {float:left;display:block;padding:10px}
 .col1 {background:white;border-right:1px solid #666; height:800px;width:350px; overflow: auto}
-.col1 img {width:100%}
-.col2 img {width:100%}
-.draggable {}
+.col1 img, .col2 img {width:100%}
 .chosenItem {position:absolute;z-index:2}
 .item {display:inline-block;margin:4px;background-color:deeppink;text-align:center;width:60px}
 .item p {display:block;margin:0;padding:0;font-size:9px; text-align: center;margin:auto}
@@ -21,9 +19,10 @@ div.selection {position:absolute; border:1px dotted black;width:300px;height:200
 
 section {
         position:relative;
-        height: 784px;
-        width: 1110px;
+        height: 704px;
+        width: 1000px;
         background:white;
+        border-bottom:2px solid #555;
 } 
 
 @media print{

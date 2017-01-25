@@ -8,25 +8,47 @@
         <script src="js/interactions.js"></script>
 
         <script src="lib/interact.js"></script>
+        <script src="js/print.js"></script>
+
+        <script type="text/javascript" src="//cdn.rawgit.com/MrRio/jsPDF/master/dist/jspdf.min.js">
+        </script>
+        <script type="text/javascript" src="//cdn.rawgit.com/niklasvh/html2canvas/0.5.0-alpha2/dist/html2canvas.min.js">
+        </script>
+
         </head>
         <body>
             <div class="menu">Menu stuff here... | Season | department ... 
-                <div style="margin-left:100px;display:inline">Filter :<select id="filterSelect"><option value=all>All</option></select> 
+                <div style="margin-left:100px;display:inline">Filter :<select id="filterSelect"><option value="all">All</option></select> 
                 <button id="fakeLoad">Fake load</button>
+                <button id="create_pdf">Pdf...</button>
+                
                  </div>
             </div>
             <div class="supercontainer">
             <div class="col col1" id="sourceContainer"><h2>Drag from here</h2></div>
             <div class="col col2 mainstage" id="destinationContainer">
-                <section id="page0">
+                <section id="page0" class="printablePage">
                     <div class="selection hide"></div>
                                     
                 </section>
+<!--
+                <section id="page1" class="printablePage">
+                    <div class="selection hide">
+GURKAN
+
+                    </div>
+                                    
+                </section>-->
+
 
             </div>
             <div class="clear"></div>
             </div>
                 
             </body>
-            
+            <script>
+ //create pdf
+
+ 
+</script>
     </html>
